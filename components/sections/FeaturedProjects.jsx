@@ -33,17 +33,8 @@ function EmptyState() {
         No featured projects yet
       </h3>
       <p className="mt-2 text-sm text-muted-foreground">
-        Add a project in Sanity Studio and flip the{" "}
-        <span className="font-medium text-foreground">Featured</span> toggle to
-        showcase it here. The latest 3 featured projects will appear
-        automatically.
+        Check back soon! I am currently working on some exciting projects and will be showcasing them here shortly.
       </p>
-      <Button asChild variant="outline" className="mt-6 gap-2">
-        <a href="/studio" target="_blank" rel="noopener noreferrer">
-          Open Sanity Studio
-          <ArrowRight className="size-4" />
-        </a>
-      </Button>
     </div>
   );
 }
