@@ -19,13 +19,16 @@ import {
 } from "@/components/icons/social-icons";
 import { siteConfig } from "@/lib/site-config";
 
+import { sendEmail } from "@/app/actions/send-email";
+
 function ContactForm() {
   const [loading, setLoading] = React.useState(false);
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
     const form = e.currentTarget;
-    const data = Object.fromEntries(new FormData(form));
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
 
     if (!data.name?.trim() || !data.email?.trim() || !data.message?.trim()) {
       toast.error("Please fill in your name, email and message.");
@@ -37,73 +40,86 @@ function ContactForm() {
     }
 
     setLoading(true);
-    // No-backend fallback: compose an email in the user's mail client.
-    // Swap this for a Server Action / API route + email provider later.
-    const subject = encodeURIComponent(
-      data.subject?.trim() || `Portfolio enquiry from ${data.name}`
-    );
-    const body = encodeURIComponent(
-      `Name: ${data.name}\nEmail: ${data.email}\n\n${data.message}`
-    );
 
-    window.setTimeout(() => {
-      window.location.href = `mailto:${siteConfig.email}?subject=${subject}&body=${body}`;
+    try {
+      const result = await sendEmail(formData);
+
+      if (result.success) {
+        toast.success("Message sent successfully! I'll get back to you soon.");
+        form.reset();
+      } else {
+        toast.error(result.error || "Failed to send message.");
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred.");
+    } finally {
       setLoading(false);
-      toast.success("Your message is ready to send in your email app!");
-      form.reset();
-    }, 600);
+    }
   }
 
   return (
     <form
       onSubmit={onSubmit}
-      className="space-y-4 rounded-2xl border border-border/60 bg-card/70 p-6 backdrop-blur"
+      className="space-y-6 rounded-3xl border border-border/60 bg-card/60 px-8 py-12 shadow-xl backdrop-blur-xl"
     >
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="name">Name</Label>
-          <Input id="name" name="name" placeholder="Jane Doe" autoComplete="name" />
+          <Label htmlFor="name" className="ml-1 text-sm font-medium text-foreground/90">Name</Label>
+          <Input
+            id="name"
+            name="name"
+            placeholder="Jane Doe"
+            autoComplete="name"
+            className="h-12 border-border/50 bg-background/50 px-4 text-base shadow-sm transition-colors focus-visible:bg-background"
+          />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email" className="ml-1 text-sm font-medium text-foreground/90">Email</Label>
           <Input
             id="email"
             name="email"
             type="email"
             placeholder="jane@example.com"
             autoComplete="email"
+            className="h-12 border-border/50 bg-background/50 px-4 text-base shadow-sm transition-colors focus-visible:bg-background"
           />
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="subject">Subject</Label>
-        <Input id="subject" name="subject" placeholder="Let's build something" />
+        <Label htmlFor="subject" className="ml-1 text-sm font-medium text-foreground/90">Subject</Label>
+        <Input
+          id="subject"
+          name="subject"
+          placeholder="Let's build something"
+          className="h-12 border-border/50 bg-background/50 px-4 text-base shadow-sm transition-colors focus-visible:bg-background"
+        />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="message">Message</Label>
+        <Label htmlFor="message" className="ml-1 text-sm font-medium text-foreground/90">Message</Label>
         <Textarea
           id="message"
           name="message"
-          rows={5}
+          rows={6}
           placeholder="Tell me about your project, role or idea…"
+          className="min-h-35 resize-y border-border/50 bg-background/50 p-4 text-base shadow-sm transition-colors focus-visible:bg-background"
         />
       </div>
 
       <Button
         type="submit"
         disabled={loading}
-        className="w-full gap-2 bg-linear-to-r from-indigo-500 to-fuchsia-500 text-white hover:opacity-90"
+        className="h-12 w-full gap-2 rounded-xl bg-linear-to-r from-indigo-500 to-fuchsia-500 text-base font-medium text-white shadow-lg shadow-fuchsia-500/20 transition-all hover:opacity-90 active:scale-[0.98]"
       >
         {loading ? (
           <>
-            <Loader2 className="size-4 animate-spin" />
+            <Loader2 className="size-5 animate-spin" />
             Sending…
           </>
         ) : (
           <>
-            <Send className="size-4" />
+            <Send className="size-5" />
             Send Message
           </>
         )}
