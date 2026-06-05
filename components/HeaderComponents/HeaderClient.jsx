@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import { useTheme } from "next-themes";
 import { Menu, Moon, Sun, Download } from "lucide-react";
@@ -48,9 +50,21 @@ export default function HeaderClient({
   nav = siteConfig.nav,
   resume = siteConfig.social.resume,
 }) {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const [scrolled, setScrolled] = React.useState(false);
-  const [active, setActive] = React.useState(nav[0]?.href);
+  const [activeSection, setActiveSection] = React.useState("home");
   const [open, setOpen] = React.useState(false);
+
+  // Hash links look like "/#about" -> section id "about".
+  const sectionId = (href) =>
+    href.startsWith("/#") ? href.slice(2) : null;
+
+  const isActive = (href) => {
+    const id = sectionId(href);
+    if (id) return isHome && activeSection === id;
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -60,22 +74,25 @@ export default function HeaderClient({
   }, []);
 
   React.useEffect(() => {
+    if (!isHome) return;
     const sections = nav
-      .map((n) => document.getElementById(n.href.replace("#", "")))
+      .map((n) => sectionId(n.href))
+      .filter(Boolean)
+      .map((id) => document.getElementById(id))
       .filter(Boolean);
     if (!sections.length) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(`#${entry.target.id}`);
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
         });
       },
       { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
     );
     sections.forEach((s) => observer.observe(s));
     return () => observer.disconnect();
-  }, [nav]);
+  }, [nav, isHome]);
 
   return (
     <motion.header
@@ -93,7 +110,7 @@ export default function HeaderClient({
         )}
       >
         {/* Logo */}
-        <a href="#home" className="group flex items-center gap-2.5">
+        <Link href="/" className="group flex items-center gap-2.5">
           <span className="grid size-9 place-items-center rounded-xl bg-linear-to-br from-indigo-500 via-fuchsia-500 to-sky-500 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/25 transition-transform group-hover:scale-105">
             {siteConfig.initials}
           </span>
@@ -101,24 +118,24 @@ export default function HeaderClient({
             {siteConfig.firstName}
             <span className="text-muted-foreground">.dev</span>
           </span>
-        </a>
+        </Link>
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-1 md:flex">
           {nav.map((item) => {
-            const isActive = active === item.href;
+            const active = isActive(item.href);
             return (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
                   "relative rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  isActive
+                  active
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                {isActive && (
+                {active && (
                   <motion.span
                     layoutId="nav-active"
                     className="absolute inset-0 -z-10 rounded-lg bg-muted"
@@ -126,7 +143,7 @@ export default function HeaderClient({
                   />
                 )}
                 {item.label}
-              </a>
+              </Link>
             );
           })}
         </nav>
@@ -157,17 +174,17 @@ export default function HeaderClient({
               <nav className="mt-2 flex flex-col px-2">
                 {nav.map((item) => (
                   <SheetClose asChild key={item.href}>
-                    <a
+                    <Link
                       href={item.href}
                       className={cn(
                         "rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                        active === item.href
+                        isActive(item.href)
                           ? "bg-muted text-foreground"
                           : "text-muted-foreground hover:bg-muted hover:text-foreground"
                       )}
                     >
                       {item.label}
-                    </a>
+                    </Link>
                   </SheetClose>
                 ))}
               </nav>

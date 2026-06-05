@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Rocket } from "lucide-react";
 
 import { Section, SectionHeading } from "./Section";
-import { ProjectCard } from "./ProjectCard";
+import { ProjectCard } from "@/components/projects/ProjectCard";
 import { Button } from "@/components/ui/button";
 import {
   StaggerContainer,

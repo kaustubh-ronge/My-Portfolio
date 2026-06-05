@@ -58,3 +58,51 @@ export function TechIcon({ name, className }) {
     />
   );
 }
+
+// Maps free-text technology names (e.g. "Next.js", "Node.js") to icon keys.
+const ALIASES = {
+  react: "react",
+  reactjs: "react",
+  next: "nextjs",
+  nextjs: "nextjs",
+  node: "node",
+  nodejs: "node",
+  express: "express",
+  expressjs: "express",
+  mongodb: "mongodb",
+  mongo: "mongodb",
+  mongoose: "mongodb",
+  neon: "neon",
+  neondb: "neon",
+  postgres: "neon",
+  postgresql: "neon",
+  supabase: "supabase",
+  prisma: "prisma",
+  prismaorm: "prisma",
+  drizzle: "drizzle",
+  drizzleorm: "drizzle",
+  tailwind: "tailwind",
+  tailwindcss: "tailwind",
+  typescript: "typescript",
+  ts: "typescript",
+  javascript: "javascript",
+  js: "javascript",
+  java: "java",
+  vercel: "vercel",
+  sanity: "sanity",
+  sanitycms: "sanity",
+  authjs: "authjs",
+  nextauth: "authjs",
+  nextauthjs: "authjs",
+  clerk: "clerk",
+  framermotion: "motion",
+  framer: "motion",
+  motion: "motion",
+};
+
+/** Resolve a free-text tech name to a known icon key (or null). */
+export function techIconKey(name) {
+  if (!name) return null;
+  const k = name.toLowerCase().replace(/[.\s_/+-]/g, "");
+  return ALIASES[k] ?? (techIcons[k] ? k : null);
+}

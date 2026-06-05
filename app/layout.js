@@ -2,8 +2,6 @@ import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { SanityLive } from "@/sanity/lib/live";
-
 import { siteConfig } from "@/lib/site-config";
 
 const inter = Inter({
@@ -60,7 +58,6 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
         >
           {children}
-          <SanityLive />
           <Toaster position="bottom-right" richColors />
         </ThemeProvider>
       </body>
