@@ -78,3 +78,16 @@ export const PROJECT_QUERY = defineQuery(/* groq */ `
     galleryImages[]{ _key, ${imageFragment}, caption }
   }
 `);
+
+/** Experience timeline — ordered by the explicit display-order field. */
+export const EXPERIENCE_QUERY = defineQuery(/* groq */ `
+  *[_type == "experience"] | order(order asc) {
+    _id,
+    role,
+    org,
+    type,
+    period,
+    description,
+    highlights
+  }
+`);
