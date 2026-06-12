@@ -11,7 +11,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 import { Reveal } from "@/components/motion/reveal";
 import { GradientText } from "@/components/motion/text-effects";
 import { siteConfig } from "@/lib/site-config";
@@ -61,15 +61,17 @@ export function About() {
             {/* Rotating glow halo */}
             <div className="animate-spin-slow absolute -inset-4 rounded-full bg-linear-to-tr from-indigo-500 via-fuchsia-500 to-sky-500 opacity-30 blur-2xl" />
             {/* Gradient ring */}
-            <div className="relative rounded-full bg-linear-to-br from-indigo-500 via-fuchsia-500 to-sky-500 p-[3px] shadow-2xl shadow-fuchsia-500/20">
-              <Avatar className="size-60 border-4 border-background sm:size-72">
-                <AvatarImage src="/profile.jpg" alt={siteConfig.name} />
-                <AvatarFallback className="bg-card">
-                  <GradientText className="font-heading text-6xl font-bold">
-                    {siteConfig.initials}
-                  </GradientText>
-                </AvatarFallback>
-              </Avatar>
+            <div className="relative rounded-full bg-linear-to-br from-indigo-500 via-fuchsia-500 to-sky-500 p-0.75 shadow-2xl shadow-fuchsia-500/20">
+              <div className="relative size-60 overflow-hidden rounded-full border-4 border-background sm:size-72">
+                <Image
+                  src="/profile.jpeg"
+                  alt={siteConfig.name}
+                  fill
+                  sizes="(max-width: 768px) 240px, 288px"
+                  priority
+                  className="object-cover object-[center_18%]"
+                />
+              </div>
             </div>
 
             <FloatingChip
